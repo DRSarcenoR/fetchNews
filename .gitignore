@@ -1,0 +1,6 @@
+# informacion sensible
+*.env
+
+
+# posibles archivos masivos
+data/
