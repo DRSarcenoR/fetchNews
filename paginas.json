@@ -1,0 +1,53 @@
+{
+    "info": {
+      "news_platforms": [
+        {
+          "name": "EpInvestiga",
+          "url": "https://epinvestiga.com/"
+        },
+        {
+          "name": "Soy 502",
+          "url": "https://epinvestiga.com/"
+        },
+        {
+          "name": "La Hora",
+          "url": "https://lahora.gt/"
+        },
+        {
+          "name": "Insight Crime",
+          "url": "https://insightcrime.org/es/"
+        },
+        {
+          "name": "Panama Papers",
+          "url": "https://www.icij.org/journalists/"
+        },
+        {
+          "name": "Colegio de Abogados",
+          "url": "https://www.cang.org.gt/"
+        },
+        {
+          "name": "OpenCorporates",
+          "url": "https://opencorporates.com/"
+        },
+        {
+          "name": "PANADATA",
+          "url": "https://www.panadata.net/"
+        }
+      ],
+      "government_platforms": [
+        {
+          "name": "Antinarcóticos",
+          "url": "https://www.sgaia.gob.gt/"
+        },
+        {
+          "name": "Departamento de Estado",
+          "url": "https://www.state.gov/"
+        },
+        {
+          "name": "Registro de Detenidos",
+          "url": "http://consulta-recede.oj.gob.gt/"
+        }
+      ]
+    }
+  }
+  
