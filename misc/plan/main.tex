@@ -1,0 +1,144 @@
+\input{preamble}
+
+%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%
+\title{Propuesta para la Implementación de una Herramienta de Análisis y Visualización de Redes}
+\author{\large{Diego Sarceño}\\\texttt{diego.sarceno@chn.com.gt}\\Compliance Quality Control\\\small{Gerencia de Cumplimiento}}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\pagebreak
+
+\section{Introducción}
+En el contexto actual, las instituciones financieras enfrentan desafíos cada vez más complejos para monitorear actividades sospechosas que puedan estar relacionadas con fraude bancario, lavado de dinero o financiamiento al terrorismo. Estos riesgos no solo amenazan la seguridad financiera, sino que también comprometen la reputación del banco y el cumplimiento normativo.\\
+
+El manejo de transacciones financieras genera un vasto volumen de datos interconectados que contienen patrones complejos. Entender y analizar estas conexiones es esencial para identificar actividades irregulares. La teoría de grafos, el aprendizaje automático y el deep learning en grafos ofrecen herramientas avanzadas para mapear relaciones, detectar anomalías y prever posibles fraudes. \\
+
+Esta propuesta presenta un enfoque formal y detallado para desarrollar una herramienta que integre estas técnicas, permitiendo visualizar las interacciones transaccionales de clientes y detectar actividades sospechosas de manera efectiva.
+
+
+\section{Objetivos}
+
+\subsection{General}
+Diseñar e implementar una herramienta inteligente que permita:
+\begin{enumerate}
+    \item \textbf{Mapear} la información transaccional de los clientes del banco en un grafo, destacando conexiones relevantes entre cuentas, productos y personas asociadas.
+    \item \textbf{Detectar y clasificar} actividades sospechosas relacionadas con fraude bancario, lavado de dinero y financiamiento del terrorismo.
+    \item \textbf{Proveer visualizaciones interactivas} y alertas automáticas para facilitar el análisis y la toma de decisiones por parte de los analistas de riesgos.
+\end{enumerate}
+
+\subsection{Específicos}
+\begin{enumerate}
+    \item Modela transacciones financieras y relaciones legales entre clientes como un grafo dinámico.
+    \item Identificar comunidades y patrones de comportamiento utilizando algoritmos de detección de comunidades y clustering.
+    \item Detectar transacciones y relaciones anómalas mediante técnicas de clasificación y modelos de anomalías.
+    \item Aplicar redes neuronales en grafos para mejorar la precisión en la detección de actividades sospechosas.
+    \item Utilizar herramientas de visualización (o desarrollar una herramienta) para explorar relaciones y emitir alertas de riesgo.
+\end{enumerate}
+
+
+\section{Metodología}
+\subsection{Modelado de los Datos}
+La base de la herramienta será un grafo que represente las relaciones entre los elementos clave.
+\begin{itemize}
+    \item \textbf{Nodos:} 
+    \begin{itemize}
+        \item Clientes (individuales y jurídicos)
+        \item Cuentas y productos.
+        \item Representantes legales, notarios, accionistas, beneficiarios, etc.
+    \end{itemize}
+    \item \textbf{Aristas:}
+    \begin{itemize}
+        \item Transacciones
+        \item Relación de propiedad o representacion entre personas y entidades jurídicas.
+        \item Conexiones entre productos financieros asociados a un cliente.
+    \end{itemize}
+    \item \textbf{Propiedades de los nodos y aristas: }
+    \begin{itemize}
+        \item Monto y frecuencia de transacciones
+        \item Categoría del producto financiero
+        \item Relación temporal (historial de transacciones).
+    \end{itemize}
+\end{itemize}
+
+\subsection{Análisis de Grafos y Redes Sociales}
+Para identificar patrones y relaciones críticas en el grafo, se aplicarán métodos de teoría de grafos y análisis de redes sociales.
+\begin{enumerate}
+    \item \textbf{Detección de Comunidades:} 
+    \begin{itemize}
+        \item Louvain, Leiden, Label propagation
+        \item Identificar grupos de cuentas con conexiones densas, que podrían corresponder a esquemas sospechosos (por ejemplo, estructuras de lavado de dinero).
+    \end{itemize}
+    \item \textbf{Métricas de Red:}
+    \begin{itemize}
+        \item Centralidad (degree, closeness, betweenness)
+        \item Conectividad y densidad de nodos.
+        \item Identificar nodos clave en posibles cadenas de transacciones sopechosas.
+    \end{itemize}
+    \item \textbf{Detección de subgráfos anómalos: }
+    \begin{itemize}
+        \item Anomalous Subgraph Detection (ASD), OddBall.
+        \item Descubrir patrones transaccionales inusuales, como cuentas que actúan como intermediarios en flujos atípicos.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Algoritmo de Clustering y Clasificación}
+\begin{enumerate}
+    \item \textbf{Clustering no Supervisado:} 
+    \begin{itemize}
+        \item K-Means, DBSCAN, HDBSCAN
+        \item Agrupar transacciones según características como monto, frecuencia y destino.
+    \end{itemize}
+    \item \textbf{Combinacion de KNN y DNN:}
+    \begin{itemize}
+        \item Combinar K-Nearest Neightbors con redes neuronales profundas para mejorar la detección.
+    \end{itemize}
+\end{enumerate}
+
+
+\subsection{Redes Neuronales en Grafos (GNNs)}
+\begin{enumerate}
+    \item \textbf{Modelos:} 
+    \begin{itemize}
+        \item GraphSAGE: generar embeddings de nodos basados en sus vecinos.
+        \item GCN (Graph Convolutional Networks): capturar relaciones complejas en el grafo.
+        \item GAT (Graph Attention Networks): priorizar relaciones más reelevantes.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Visualización y Sistema de Alertas}
+
+Para la visualización de los datos transformados en un grafo, existen varias opciones. Una de ellas es utilizar herramientas ya existentes como Power BI o Gephi, que ofrecen funcionalidades robustas para la visualización de grafos. Power BI, aunque generalmente orientado a la visualización de datos tabulares, tiene la capacidad de integrarse con bases de datos de grafos a través de conectores y permite crear dashboards interactivos. Por otro lado, Gephi es una herramienta específicamente diseñada para la visualización de redes, permitiendo crear representaciones interactivas de grafos de manera fácil, con una amplia gama de algoritmos de análisis de redes. \\
+
+Sin embargo, también es posible desarrollar una herramienta personalizada simple que permita hacer visualizaciones interactivas mediante frameworks como Dash o Streamlit, los cuales son más flexibles y personalizables para crear aplicaciones web interactivas. Estas herramientas permiten integrar visualizaciones de grafos generadas con librerías como NetworkX o PyVis, y brindan una experiencia dinámica para explorar las relaciones transaccionales y detectar patrones sospechosos. \\
+
+Además, al desarrollar una herramienta propia, se obtiene una mayor escalabilidad, ya que se puede adaptar y expandir conforme las necesidades del banco evolucionen, integrándose de manera más fluida con otras herramientas y sistemas existentes en el banco, ya sea dentro de la misma gerencia o en otras áreas relacionadas, como el monitoreo de riesgos o la gestión de productos financieros. Esta integración optimiza los flujos de trabajo y facilita el acceso a la información relevante, mejorando la eficiencia en la toma de decisiones y en los procesos de auditoría interna. \\
+
+
+\section{Utilizada y Aplicaciones}
+\begin{enumerate}
+    \item \textbf{Para analistas:} 
+    \begin{itemize}
+        \item Visualizar relaciones complejas y patrones anómalos de forma intuitiva.
+        \item Identificar de manera eficiente las cuentas y transacciones de mayor riesgo.
+    \end{itemize}
+    \item \textbf{Para el banco y autoridades regulatorias:}
+    \begin{itemize}
+        \item Reducir riesgos.
+        \item Mejorar la reputación al demostrar un enfoque proactivo.
+        \item Generar reportes que cumplan con los estándares.
+    \end{itemize}
+\end{enumerate}
+
+
+\pagebreak
+\nocite{*}
+\bibliography{referencias}
+
+
+\end{document}
