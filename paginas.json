@@ -39,9 +39,20 @@
         },
         {
           "name": "Plaza Publica",
-          "url": "https://www.prensalibre.com/"
+          "url": "https://www.plazapublica.com.gt/"
+        },
+        {
+          "name": "Republica GT",
+          "url": "https://republica.gt/"
+        },
+        {
+          "name": "Vox Populi",
+          "url": "https://voxpopuliguate.com/"
+        },
+        {
+          "name": "Ojo con mi pisto",
+          "url": "https://www.ojoconmipisto.com/"
         }
-        
       ],
       "government_platforms": [
         {
