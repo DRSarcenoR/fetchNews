@@ -34,9 +34,14 @@
           "url": "https://www.panadata.net/"
         },
         {
-          "name": "Republica GT",
-          "url": "https://republica.gt/"
+          "name": "PrensaLibre",
+          "url": "https://www.prensalibre.com/"
+        },
+        {
+          "name": "Plaza Publica",
+          "url": "https://www.prensalibre.com/"
         }
+        
       ],
       "government_platforms": [
         {
