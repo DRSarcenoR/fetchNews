@@ -53,9 +53,6 @@ if __name__ in "__main__":
         else:
             st.write(f"Resultados para: **{st.session_state['busqueda']}**")
 
-            # crea una tabla con scroll
-            st.dataframe(st.session_state['resultados'], height=400)
-
             # Convertir datos JSON para descarga
             json_data = st.session_state['resultados'].to_json(orient='records', indent=4, force_ascii=False)
 
@@ -66,4 +63,73 @@ if __name__ in "__main__":
                 file_name='resultados.json',
                 mime='application/json'
             )
+
+            # Generar las tablas personalizadas en HTML
+            resultados = st.session_state["resultados"]
+            for _, row in resultados.iterrows():
+                html2 = f"""
+                <div style="border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; padding: 10px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td rowspan="4" style="border: 1px solid #ddd; text-align: center; vertical-align: middle; width: 15%; font-weight: bold;">{row['Sitio']}</td>
+                            <td style="border: 1px solid #ddd; font-weight: bold;">Título</td>
+                            <td style="border: 1px solid #ddd;">{row['Título']}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; font-weight: bold;">Resumen</td>
+                            <td style="border: 1px solid #ddd;">{row['Resumen']}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; font-weight: bold;">Categoría</td>
+                            <td style="border: 1px solid #ddd;">{row['Categoría']}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; font-weight: bold;">Link</td>
+                            <td style="border: 1px solid #ddd;"><a href="{row['Link']}" target="_blank">{row['Link']}</a></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="border: 1px solid #ddd; font-weight: bold;">Fecha</td>
+                            <td style="border: 1px solid #ddd;">{row['Fecha']}</td>
+                            <td style="border: 1px solid #ddd; font-weight: bold;">Autor</td>
+                            <td style="border: 1px solid #ddd;">{row['Autor']}</td>
+                        </tr>
+                    </table>
+                </div>
+                """
+
+                html = f'''<div style="border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; padding: 10px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td rowspan="6" style="border: 1px solid #ddd; text-align: center; vertical-align: middle; width: 15%; font-weight: bold;">{row['Sitio']}</td>
+                                        <td style="border: 1px solid #ddd; font-weight: bold; width: 20%;">Título</td>
+                                        <td style="border: 1px solid #ddd; width: 65%;">{row['Título']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; font-weight: bold;">Resumen</td>
+                                        <td style="border: 1px solid #ddd;">{row['Resumen']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; font-weight: bold;">Categoría</td>
+                                        <td style="border: 1px solid #ddd;">{row['Categoría']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; font-weight: bold;">Link</td>
+                                        <td style="border: 1px solid #ddd;"><a href="{row['Link']}" target="_blank">{row['Link']}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; font-weight: bold;">Fecha</td>
+                                        <td style="border: 1px solid #ddd;">{row['Fecha']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; font-weight: bold;">Autor</td>
+                                        <td style="border: 1px solid #ddd;">{row['Autor']}</td>
+                                    </tr>
+                                </table>
+                            </div>'''
+                st.markdown(html, unsafe_allow_html=True)
+
+            # crea una tabla con scroll
+            #st.dataframe(st.session_state['resultados'], height=400)
+
+            
     
