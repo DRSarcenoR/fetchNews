@@ -1,9 +1,9 @@
-name: shinyscrap
+name: scrap
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
+  - python=3.11
   - pandas
   - numpy
   - matplotlib
@@ -20,3 +20,8 @@ dependencies:
   - ipykernel
   - polars
   - beautifulsoup4
+  - pip # Añadir pip explícitamente
+  - pip:
+      - polars
+      - rapidfuzz
+      - tabulate

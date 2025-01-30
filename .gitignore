@@ -1,5 +1,6 @@
 # informacion sensible
 *.env
+secrets.toml
 
 
 # posibles archivos masivos
