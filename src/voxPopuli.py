@@ -48,44 +48,55 @@ class voxPopuli:
 
 
     def obtener_max_pags(self) -> int:
-        # solicitamos la info
-        response = self.scrap.genRequest(self.url + self.busqueda + self.name)
+        try:
+            # solicitamos la info
+            response = self.scrap.genRequest(self.url + self.busqueda + self.name)
 
-        # verificamos que se haya extraido bien
-        if response == 200:
-            # parseamos el html
-            soup = BeautifulSoup(response.content, 'html.parser')
+            # verificamos que se haya extraido bien
+            if response == 200:
+                # parseamos el html
+                soup = BeautifulSoup(response.content, 'html.parser')
 
-            # segmentamos las paginas
-            paginas = soup.find_all('a', class_='page-numbers')
+                # segmentamos las paginas
+                paginas = soup.find_all('a', class_='page-numbers')
 
-            # extramos todos los números de página
-            numeros_paginas = [int(element.text.strip()) for element in paginas if element.text.strip().isdigit()]
+                # extramos todos los números de página
+                numeros_paginas = [int(element.text.strip()) for element in paginas if element.text.strip().isdigit()]
 
-            # maximo
-            if numeros_paginas:
-                return max(numeros_paginas)
-            else:
-                return 1
+                # maximo
+                if numeros_paginas:
+                    return max(numeros_paginas)
+                else:
+                    return 1
+        except RequestException as e:
+            print(f'Error en la solicitud de paginas: {e}')
+            return 1
+        except Exception as e:
+            print(f'Error inesperado: {e}')
+            return 1
     
     def extraer_info_articulo(self, soup: BeautifulSoup) -> dict:
-        link_tag = soup.find("a", class_="image-link")
-        link = link_tag["href"] if link_tag else None
-        title_tag = soup.find("h2", class_="is-title post-title")
-        title = title_tag.get_text(strip=True) if title_tag else None
-        
-        fecha_entrada_tag = soup.find("time", class_="post-date")
-        fecha_entrada = fecha_entrada_tag["datetime"] if fecha_entrada_tag else None
+        try:
+            link_tag = soup.find("a", class_="image-link")
+            link = link_tag["href"] if link_tag else None
+            title_tag = soup.find("h2", class_="is-title post-title")
+            title = title_tag.get_text(strip=True) if title_tag else None
+            
+            fecha_entrada_tag = soup.find("time", class_="post-date")
+            fecha_entrada = fecha_entrada_tag["datetime"] if fecha_entrada_tag else None
 
-        
-        return {
-            "titulo": title,
-            "resumen": None, 
-            "link": link,
-            "categoria": None, 
-            "fecha": datetime.fromisoformat(fecha_entrada).date(),
-            "autor": None
-        }
+            
+            return {
+                "titulo": title,
+                "resumen": None, 
+                "link": link,
+                "categoria": None, 
+                "fecha": datetime.fromisoformat(fecha_entrada).date(),
+                "autor": None
+            }
+        except Exception as e:
+            print(f'Error extrayendo información del articulo: {e}')
+            return {}
 
     def all_pages(self, max_pages : int) -> list:
         full = []
@@ -114,6 +125,9 @@ class voxPopuli:
                     full.append(data)
             except RequestException as e:
                 print(f'Error al procesar pagina {i}: {e}')
+                continue
+            except Exception as e:
+                print(f'Error inesperado en la pagina {i}: {e}')
                 continue
         
         return {

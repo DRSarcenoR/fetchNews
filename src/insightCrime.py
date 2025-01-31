@@ -50,30 +50,38 @@ class insightCrime:
 
 
     def clean_data(self, data: json) -> json:
-        # almacenamos cada artiuclo
-        articulos = []
+        try:
+            # almacenamos cada artiuclo
+            articulos = []
 
-        # extraemos unicamente la info que nos interesa
-        for articulo in data['results']:
-            articulos.append(
-                {
-                    "titulo": articulo['fields']['title.default'],
-                    "resumen": articulo['fields']['excerpt.default'],
-                    "link": articulo['fields']['permalink.url.raw'],
-                    "categoria": articulo['fields']['category.name.default'],
-                    "fecha": datetime.strptime(articulo['fields']['date'], "%Y-%m-%d %H:%M:%S").date(),
-                    "autor": None
-                }
-            )
-        
-        return {
-            'insightCrime': [
-                {
-                    "page": 1,
-                    "articulos": articulos
-                }
-            ]
-        }
+            # extraemos unicamente la info que nos interesa
+            for articulo in data['results']:
+                try:
+                    articulos.append(
+                        {
+                            "titulo": articulo['fields']['title.default'],
+                            "resumen": articulo['fields']['excerpt.default'],
+                            "link": articulo['fields']['permalink.url.raw'],
+                            "categoria": articulo['fields']['category.name.default'],
+                            "fecha": datetime.strptime(articulo['fields']['date'], "%Y-%m-%d %H:%M:%S").date(),
+                            "autor": None
+                        }
+                    )
+                except Exception as e:
+                    print(f'Error procesando el artículo: {e}')
+                    continue
+            
+            return {
+                'insightCrime': [
+                    {
+                        "page": 1,
+                        "articulos": articulos
+                    }
+                ]
+            }
+        except Exception as e:
+            print(f'Error limpiando los datos: {e}')
+            return {"insightCrime": []}
             
 
 
@@ -92,3 +100,4 @@ if __name__ in "__main__":
 
     # limpiamos la data con la que nos interesa a nostros
     info = ic.clean_data(data=data)
+

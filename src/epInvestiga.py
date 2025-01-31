@@ -52,63 +52,84 @@ class epInvestiga:
 
 
     def dividir_fecha_hora_iso(self, fecha_iso : str) -> dict:
-        # Parsear la fecha ISO
-        fecha = datetime.fromisoformat(fecha_iso)
+        try:
+            # Parsear la fecha ISO
+            fecha = datetime.fromisoformat(fecha_iso)
+            
+            # Asegurar que está en zona horaria de Centroamérica (GMT-6)
+            centroamerica_tz = timezone("America/Guatemala")
+            fecha_gmt6 = fecha.astimezone(centroamerica_tz)
+            
+            # Formatear fecha y hora
+            fecha_formateada = fecha_gmt6.strftime("%Y-%m-%d")  # YYYY-MM-DD
+            hora_formateada = fecha_gmt6.strftime("%H:%M:%S")  # HH:MM:SS
+            
+            # Retornar el diccionario
+            return {
+                "fecha": fecha_formateada,
+                "hora": hora_formateada
+            }
+        except Exception as e:
+            print(f'Error al procesar la fecha: {e}')
+            return {"fecha": None, "hora": None}
         
-        # Asegurar que está en zona horaria de Centroamérica (GMT-6)
-        centroamerica_tz = timezone("America/Guatemala")
-        fecha_gmt6 = fecha.astimezone(centroamerica_tz)
-        
-        # Formatear fecha y hora
-        fecha_formateada = fecha_gmt6.strftime("%Y-%m-%d")  # YYYY-MM-DD
-        hora_formateada = fecha_gmt6.strftime("%H:%M:%S")  # HH:MM:SS
-        
-        # Retornar el diccionario
-        return {
-            "fecha": fecha_formateada,
-            "hora": hora_formateada
-        }
+
     
 
     def extraer_info_articulo(self, soup : bs4.BeautifulSoup) -> dict:
-        # link del articulo
-        link = soup.find("a", class_="element-wrap")["href"]
+        try:
+            # link del articulo
+            link = soup.find("a", class_="element-wrap")["href"]
 
-        # titulo del articulo
-        titulo = soup.find("h3", class_="post-title").get_text(strip=True)
+            # titulo del articulo
+            titulo = soup.find("h3", class_="post-title").get_text(strip=True)
 
-        # extraer el resumen
-        resumen = soup.find("div", class_="entry-summary").get_text(strip=True)
+            # extraer el resumen
+            resumen = soup.find("div", class_="entry-summary").get_text(strip=True)
 
-        # fecha de entrada
-        fecha_entrada = soup.find("time", class_="entry-date")["datetime"]
+            # fecha de entrada
+            fecha_entrada = soup.find("time", class_="entry-date")["datetime"]
 
-        # fecha actualizacion
-        fecha_actualizacion = soup.find("time", class_="modify-date")
-        if fecha_actualizacion:
-            fecha_actualizacion = fecha_actualizacion["datetime"]
-        else:
-            fecha_actualizacion = None
+            # fecha actualizacion
+            fecha_actualizacion = soup.find("time", class_="modify-date")
+            if fecha_actualizacion:
+                fecha_actualizacion = fecha_actualizacion["datetime"]
+            else:
+                fecha_actualizacion = None
 
-        # autor
-        autor = soup.find("div", class_="post-footer").find("span").get_text(strip=True)
+            # autor
+            autor = soup.find("div", class_="post-footer").find("span").get_text(strip=True)
 
-        return {
-            "titulo": titulo,
-            "resumen": resumen,
-            "link": link,
-            "categoria": None,
-            "fecha": self.dividir_fecha_hora_iso(fecha_entrada)['fecha'],
-            "autor": autor
-        }
+            return {
+                "titulo": titulo,
+                "resumen": resumen,
+                "link": link,
+                "categoria": None,
+                "fecha": self.dividir_fecha_hora_iso(fecha_entrada)['fecha'],
+                "autor": autor
+            }
+        except Exception as e:
+            print(f'Error extrayendo la información de los artículos: {e}')
+            return {
+                "titulo": None,
+                "resumen": None,
+                "link": None,
+                "categoria": None,
+                "fecha": None,
+                "autor": None
+            }
     
 
     def max_page_number(self, soup : bs4.BeautifulSoup) -> int:
-        # filtramos por etiqueta y clase
-        page_numbers = soup.find_all('a', class_='page-numbers')
-        page_numbers = [int(element.text.strip()) for element in page_numbers if element.text.strip().isdigit()]
+        try:
+            # filtramos por etiqueta y clase
+            page_numbers = soup.find_all('a', class_='page-numbers')
+            page_numbers = [int(element.text.strip()) for element in page_numbers if element.text.strip().isdigit()]
 
-        return max(page_numbers) if page_numbers else 1
+            return max(page_numbers) if page_numbers else 1
+        except Exception as e:
+            print(f'Error obteniendo el número máximo de páginas: {e}')
+            return 1
     
 
     def all_pages(self, max_page : int) -> list:
@@ -140,6 +161,9 @@ class epInvestiga:
                     full.append(data)
             except RequestException as e:
                 print(f'Error al procesar pagina {i}: {e}')
+                continue
+            except Exception as e:
+                print(f'Error inesperado en la página {i}: {e}')
                 continue
         
         info = json.dumps({'epInvestiga': full}, indent=4, ensure_ascii=False)

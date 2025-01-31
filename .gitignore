@@ -5,3 +5,4 @@ secrets.toml
 
 # posibles archivos masivos
 data/
+__pycache__/
