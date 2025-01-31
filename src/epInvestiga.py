@@ -33,6 +33,7 @@ import warnings
 # ------------------------------>
 #       PAQUETE PROPIO
 from CHN.general import Connections, Scrapping
+from CHN.text import text_management
 # ------------------------------>
 
 
@@ -49,6 +50,7 @@ class epInvestiga:
 
         # creamos el objeto para hacer scrapping
         self.scrap = Scrapping()
+        self.tm = text_management()
 
 
     def dividir_fecha_hora_iso(self, fecha_iso : str) -> dict:
@@ -101,12 +103,12 @@ class epInvestiga:
             autor = soup.find("div", class_="post-footer").find("span").get_text(strip=True)
 
             return {
-                "titulo": titulo,
-                "resumen": resumen,
-                "link": link,
+                "titulo": self.tm.remove_unsupported_characters(titulo),
+                "resumen": self.tm.remove_unsupported_characters(resumen),
+                "link": self.tm.remove_unsupported_characters(link),
                 "categoria": None,
                 "fecha": self.dividir_fecha_hora_iso(fecha_entrada)['fecha'],
-                "autor": autor
+                "autor": self.tm.remove_unsupported_characters(autor)
             }
         except Exception as e:
             print(f'Error extrayendo la información de los artículos: {e}')
@@ -170,20 +172,29 @@ class epInvestiga:
         return info
 
 
-if __name__ in "__main__":
+if __name__ == "__main__":
     warnings.filterwarnings('ignore')
 
     # creamos el objeto
+    print('Inicio del script...')
     scrap = Scrapping()
     ep = epInvestiga(nombre='bernardo arevalo')
 
     # extraemos el número de páginas
+    print('Request...')
     response = scrap.genRequest(ep.url + ep.busqueda + ep.name)
-    if response == 200:
+    if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
 
         # numero de páginas
+        print('numero de paginas')
         max_page_ep = ep.max_page_number(soup=soup)
 
         # extraemos toda la información de las páginas
+        print('extrayendo la información')
         info = ep.all_pages(max_page=max_page_ep)
+
+        with open('../data/epInvestiga/prueba_script.json', 'w') as ps:
+            ps.write(info)
+    else:
+        print(response.status_code, response.content.decode())

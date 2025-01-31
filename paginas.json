@@ -3,69 +3,85 @@
       "news_platforms": [
         {
           "name": "EpInvestiga",
-          "url": "https://epinvestiga.com/"
+          "url": "https://epinvestiga.com/",
+          "util": "Si"
         },
         {
           "name": "Soy 502",
-          "url": "https://epinvestiga.com/"
+          "url": "https://epinvestiga.com/",
+          "util": "Tal Vez"
         },
         {
           "name": "La Hora",
-          "url": "https://lahora.gt/"
+          "url": "https://lahora.gt/",
+          "util": "No"
         },
         {
           "name": "Insight Crime",
-          "url": "https://insightcrime.org/es/"
+          "url": "https://insightcrime.org/es/",
+          "util": "Si"
         },
         {
           "name": "Panama Papers",
-          "url": "https://www.icij.org/journalists/"
+          "url": "https://www.icij.org/journalists/",
+          "util": "No"
         },
         {
           "name": "Colegio de Abogados",
-          "url": "https://www.cang.org.gt/"
+          "url": "https://www.cang.org.gt/",
+          "util": "No"
         },
         {
           "name": "OpenCorporates",
-          "url": "https://opencorporates.com/"
+          "url": "https://opencorporates.com/",
+          "util": "No"
         },
         {
           "name": "PANADATA",
-          "url": "https://www.panadata.net/"
+          "url": "https://www.panadata.net/",
+          "util": "No"
         },
         {
           "name": "PrensaLibre",
-          "url": "https://www.prensalibre.com/"
+          "url": "https://www.prensalibre.com/",
+          "util": "Tal Vez"
         },
         {
           "name": "Plaza Publica",
-          "url": "https://www.plazapublica.com.gt/"
+          "url": "https://www.plazapublica.com.gt/",
+          "util": "Si"
         },
         {
           "name": "Republica GT",
-          "url": "https://republica.gt/"
+          "url": "https://republica.gt/",
+          "util": "Si"
         },
         {
           "name": "Vox Populi",
-          "url": "https://voxpopuliguate.com/"
+          "url": "https://voxpopuliguate.com/",
+          "util": "Si"
         },
         {
           "name": "Ojo con mi pisto",
-          "url": "https://www.ojoconmipisto.com/"
+          "url": "https://www.ojoconmipisto.com/",
+          "util": "No"
         }
       ],
       "government_platforms": [
         {
           "name": "Antinarcóticos",
-          "url": "https://www.sgaia.gob.gt/"
+          "url": "https://www.sgaia.gob.gt/",
+          "util": "Sin Info"
         },
         {
           "name": "Departamento de Estado",
-          "url": "https://www.state.gov/"
+          "url": "https://www.state.gov/",
+          "util": "Sin Info"
         },
         {
           "name": "Registro de Detenidos",
-          "url": "http://consulta-recede.oj.gob.gt/"
+          "url": "http://consulta-recede.oj.gob.gt/",
+          "util": "Sin Info"
         }
       ]
     }

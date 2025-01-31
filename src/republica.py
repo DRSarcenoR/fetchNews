@@ -31,6 +31,7 @@ import warnings
 # ------------------------------>
 #       PAQUETE PROPIO
 from CHN.general import Connections, Scrapping
+from CHN.text import text_management
 # ------------------------------>
 
 
@@ -47,15 +48,27 @@ class Republica:
 
         # creamos el objeto de scrapping
         self.scrap = Scrapping()
+        self.tm = text_management()
 
     
 
     def extraer_articulos(self, soup : bs4.BeautifulSoup) -> dict:
+        title_tag = soup.select_one(".nota__titulo-item a")
+        title = title_tag.get_text(strip=True) if title_tag else None
+        url = title_tag["href"] if title_tag and title_tag.has_attr("href") else None
+
+        category_tag = soup.select_one(".nota__volanta--text")
+        category = category_tag.get_text(strip=True) if category_tag else None
+
+        time_tag = soup.select_one(".nota__fecha")
+        time = time_tag.get_text(strip=True) if time_tag else None
         return {
-            "title": soup.select_one(".nota__titulo-item a").get_text(strip=True),
-            "url": soup.select_one(".nota__titulo-item a")["href"],
-            "category": soup.select_one(".nota__volanta--text").get_text(strip=True),
-            "time": soup.select_one(".nota__fecha").get_text(strip=True)
+            "title": self.tm.remove_unsupported_characters(title),
+            "resumen": None,
+            "link": self.tm.remove_unsupported_characters(url),
+            "categoria": self.tm.remove_unsupported_characters(category),
+            "fecha": self.tm.remove_unsupported_characters(time),
+            "autor": None
         }
 
     def max_pages(self, soup : bs4.BeautifulSoup) -> int:
@@ -95,7 +108,7 @@ class Republica:
         return json.dumps({"republica": full}, indent=4, ensure_ascii=False)
 
 
-if __name__ in "__main__":
+if __name__ == "__main__":
     warnings.filterwarnings('ignore')
 
     # creamos el objeto

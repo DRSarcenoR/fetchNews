@@ -32,6 +32,7 @@ import warnings
 # ------------------------------>
 #       PAQUETE PROPIO
 from CHN.general import Connections, Scrapping
+from CHN.text import text_management
 # ------------------------------>
 
 
@@ -44,6 +45,9 @@ class plazaPublica:
 
         # nombre busqueda
         self.nombre = nombre
+
+        # creamos el objeto
+        self.tm = text_management()
 
 
     def selenium_conection(self) -> bs4.BeautifulSoup:
@@ -100,9 +104,9 @@ class plazaPublica:
         source = source_tag.get_text(strip=True) if source_tag else None
 
         return {
-            "titulo": title,
-            "resumen": snippet,
-            "link": url_tag,
+            "titulo": self.tm.remove_unsupported_characters(title),
+            "resumen": self.tm.remove_unsupported_characters(snippet),
+            "link": self.tm.remove_unsupported_characters(url_tag),
             "categoria": None, 
             "fecha": None,
             "autor": None
@@ -110,7 +114,7 @@ class plazaPublica:
 
 
 
-if __name__ in "__main__":
+if __name__ == "__main__":
     warnings.filterwarnings('ignore')
 
     # creamos el objeto

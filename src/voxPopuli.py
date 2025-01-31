@@ -31,6 +31,7 @@ import warnings
 # ------------------------------>
 #       PAQUETE PROPIO
 from CHN.general import Connections, Scrapping
+from CHN.text import text_management
 # ------------------------------>
 
 class voxPopuli:
@@ -45,6 +46,30 @@ class voxPopuli:
 
         # scrap
         self.scrap = Scrapping()
+        self.tm = text_management()
+
+    
+    def dividir_fecha_hora_iso(self, fecha_iso : str) -> dict:
+        try:
+            # Parsear la fecha ISO
+            fecha = datetime.fromisoformat(fecha_iso)
+            
+            # Asegurar que está en zona horaria de Centroamérica (GMT-6)
+            centroamerica_tz = timezone("America/Guatemala")
+            fecha_gmt6 = fecha.astimezone(centroamerica_tz)
+            
+            # Formatear fecha y hora
+            fecha_formateada = fecha_gmt6.strftime("%Y-%m-%d")  # YYYY-MM-DD
+            hora_formateada = fecha_gmt6.strftime("%H:%M:%S")  # HH:MM:SS
+            
+            # Retornar el diccionario
+            return {
+                "fecha": fecha_formateada,
+                "hora": hora_formateada
+            }
+        except Exception as e:
+            print(f'Error al procesar la fecha: {e}')
+            return {"fecha": None, "hora": None}
 
 
     def obtener_max_pags(self) -> int:
@@ -53,7 +78,7 @@ class voxPopuli:
             response = self.scrap.genRequest(self.url + self.busqueda + self.name)
 
             # verificamos que se haya extraido bien
-            if response == 200:
+            if response.status_code == 200:
                 # parseamos el html
                 soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -87,11 +112,11 @@ class voxPopuli:
 
             
             return {
-                "titulo": title,
+                "titulo": self.tm.remove_unsupported_characters(title) if title else None,
                 "resumen": None, 
-                "link": link,
+                "link": self.tm.remove_unsupported_characters(link) if link else None,
                 "categoria": None, 
-                "fecha": datetime.fromisoformat(fecha_entrada).date(),
+                "fecha": fecha_entrada.split('T')[0] if fecha_entrada else None,
                 "autor": None
             }
         except Exception as e:
@@ -138,7 +163,7 @@ class voxPopuli:
 
 
 
-if __name__ in "__main__":
+if __name__ == "__main__":
     warnings.filterwarnings('ignore')
 
     # creamos el objeto

@@ -41,7 +41,7 @@ import requests
 from requests.exceptions import RequestException
 # ------------------------------>
 #     librerías propias
-from CHN.general import Analysis, Scrapping
+from CHN.general import Analysis, Scrapping, Decorators
 # ------------------------------>
 
 
@@ -61,6 +61,7 @@ class scrappedNews:
         self.scrap = Scrapping()
 
 
+    @Decorators.inicio_y_fin
     def voxPopuliInfo(self) -> json:
         # numero de paginas
         max_pages = self.vp.obtener_max_pags()
@@ -73,11 +74,11 @@ class scrappedNews:
         return info
 
 
-
+    @Decorators.inicio_y_fin
     def epInvestigaInfo(self) -> json:
         # extraemos el número de páginas
         response = self.scrap.genRequest(self.ep.url + self.ep.busqueda + self.ep.name)
-        if response == 200:
+        if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
 
             # numero de páginas
@@ -88,15 +89,19 @@ class scrappedNews:
 
             return info
         
-
+    @Decorators.inicio_y_fin
     def insightCrimeInfo(self) -> json:
         try:
             # llamamos a la api y generamos el json
-            data = self.scrap.genRequest(self.ic.apiurl)
-            
+            response = self.scrap.genRequest(self.ic.apiurl)
+
+            # transformamos la response a json
+            data = json.loads(response.content.decode('utf-8'))
+
             if isinstance(data, dict):
                 # limpiamos la data con la que nos interesa a nostros
                 info = self.ic.clean_data(data=data)
+                print('todo ok')
                 return info
             else:
                 print('Error: no se pudo obtener una respuesta válida de la API.')
@@ -111,7 +116,7 @@ class scrappedNews:
             return info
             
     
-
+    @Decorators.inicio_y_fin
     def plazaPublicaInfo(self) -> json:
         # entramos a la pagina y extraemos la información de la busqueda
         html_parsed = self.pp.selenium_conection()
@@ -122,7 +127,7 @@ class scrappedNews:
 
         return info
     
-
+    @Decorators.inicio_y_fin
     def republicaInfo(self) -> json:
         # realizamos la peticion
         response = self.scrap.genRequest(self.re.url + self.re.busqueda + self.re.name)
@@ -141,12 +146,17 @@ class scrappedNews:
         
 
     def combine(self) -> json:
+        vp = self.voxPopuliInfo()
+        ep = self.epInvestigaInfo()
+        ic = self.insightCrimeInfo()
+        pp = self.plazaPublicaInfo()
+        re = self.republicaInfo()
         info = json.dumps({
-            "voxPopuli": self.voxPopuliInfo()['voxPopuli'],
-            "epInvestiga": self.epInvestigaInfo()['epInvestiga'],
-            "insightCrime": self.insightCrimeInfo()['insightCrime'],
-            "plazaPublica": self.plazaPublicaInfo()['plazaPublica'],
-            "republica": self.republicaInfo()['republica']
+            "voxPopuli": vp['voxPopuli'] if vp else None,
+            "epInvestiga": ep['epInvestiga'] if ep else None,
+            "insightCrime": ic['insightCrime'] if ic else None,
+            "plazaPublica": pp['plazaPublica'] if pp else None,
+            "republica": re['republica'] if re else None
         }, indent=4, ensure_ascii=False)
 
         return info
@@ -171,7 +181,7 @@ class scrappedNews:
 
 
 
-if __name__ in "__main__":
+if __name__ == "__main__":
     warnings.filterwarnings('ignore')
 
     news = scrappedNews(nombre='bernardo arevalo')
@@ -180,7 +190,7 @@ if __name__ in "__main__":
     info = news.combine()
 
     with open('data/prueba_general_v1.json', 'w') as gen:
-        json.dump(info, gen, indent=4, ensure_ascii=False)
+        json.dump(info, gen, indent=4, ensure_ascii=False, encoding='utf-8')
 
 
 """
