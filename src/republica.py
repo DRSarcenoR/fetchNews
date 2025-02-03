@@ -67,7 +67,7 @@ class Republica:
             "resumen": None,
             "link": self.tm.remove_unsupported_characters(url),
             "categoria": self.tm.remove_unsupported_characters(category),
-            "fecha": self.tm.remove_unsupported_characters(time),
+            "fecha": str(self.tm.remove_unsupported_characters(time)),
             "autor": None
         }
 

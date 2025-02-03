@@ -68,8 +68,8 @@ class epInvestiga:
             
             # Retornar el diccionario
             return {
-                "fecha": fecha_formateada,
-                "hora": hora_formateada
+                "fecha": str(fecha_formateada),
+                "hora": str(hora_formateada)
             }
         except Exception as e:
             print(f'Error al procesar la fecha: {e}')
@@ -193,6 +193,10 @@ if __name__ == "__main__":
         # extraemos toda la información de las páginas
         print('extrayendo la información')
         info = ep.all_pages(max_page=max_page_ep)
+
+        print(type(info))
+        print()
+        print(info)
 
         with open('../data/epInvestiga/prueba_script.json', 'w') as ps:
             ps.write(info)

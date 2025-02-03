@@ -116,7 +116,7 @@ class voxPopuli:
                 "resumen": None, 
                 "link": self.tm.remove_unsupported_characters(link) if link else None,
                 "categoria": None, 
-                "fecha": fecha_entrada.split('T')[0] if fecha_entrada else None,
+                "fecha": str(fecha_entrada.split('T')[0]) if fecha_entrada else None,
                 "autor": None
             }
         except Exception as e:

@@ -66,7 +66,7 @@ class insightCrime:
                             "resumen": self.tm.remove_unsupported_characters(articulo['fields']['excerpt.default']),
                             "link": self.tm.remove_unsupported_characters(articulo['fields']['permalink.url.raw']),
                             "categoria": self.tm.remove_unsupported_characters(articulo['fields']['category.name.default']),
-                            "fecha": datetime.strptime(articulo['fields']['date'], "%Y-%m-%d %H:%M:%S").date(),
+                            "fecha": str(datetime.strptime(articulo['fields']['date'], "%Y-%m-%d %H:%M:%S").date()),
                             "autor": None
                         }
                     )

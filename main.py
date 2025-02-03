@@ -129,35 +129,67 @@ class scrappedNews:
     
     @Decorators.inicio_y_fin
     def republicaInfo(self) -> json:
-        # realizamos la peticion
-        response = self.scrap.genRequest(self.re.url + self.re.busqueda + self.re.name)
+        try:
+            # realizamos la peticion
+            response = self.scrap.genRequest(self.re.url + self.re.busqueda + self.re.name)
 
-        if response.status_code == 200:
-            # parseamos
-            soup = BeautifulSoup(response.content, 'html.parser')
+            if response.status_code == 200:
+                try:
+                    # parseamos
+                    soup = BeautifulSoup(response.content, 'html.parser')
 
-            # numero de paginas
-            num_pages = self.re.max_pages(soup=soup)
+                    # numero de paginas
+                    num_pages = self.re.max_pages(soup=soup)
 
-            # extraemos la info
-            info = self.re.all_pages(num_pages)
+                    # extraemos la info
+                    info = self.re.all_pages(num_pages)
 
-            return info
+                    return info
+                except Exception as parse_error:
+                    print(f'Error al parsear el html: {parse_error}')
+            else:
+                print(f'Respuesta http inesperada: {response.status_code}')
+        except requests.exceptions.Timeout:
+            print("La solicitud tardó demasiado y fue cancelada.")
+        except requests.exceptions.ConnectionError:
+            print("Error de conexión. Verifica tu internet o si el sitio está caído.")
+        except requests.exceptions.HTTPError as http_err:
+            print(f"Error http: {http_err}")
+        except Exception as e:
+            print(f"Error inesperado {e}")
         
+        # si todo falla se retorna lo siguiente
+        return {"republica": [{"page": 1, "articulos": []}]}
+
+    def ensure_dict(self, obj : str | dict, news : str) -> dict:
+        if isinstance(obj, str):
+            try:
+                return json.loads(obj)
+            except json.JSONDecodeError:
+                return {}
+        return obj if isinstance(obj, dict) else {news: [{"page": 1, "articulos": []}]}
+
 
     def combine(self) -> json:
-        vp = self.voxPopuliInfo()
-        ep = self.epInvestigaInfo()
-        ic = self.insightCrimeInfo()
-        pp = self.plazaPublicaInfo()
-        re = self.republicaInfo()
-        info = json.dumps({
+        #vp = self.ensure_dict(self.voxPopuliInfo(), "voxPopuli")
+        #ep = self.ensure_dict(self.epInvestigaInfo(), "epInvestiga")
+        #ic = self.ensure_dict(self.insightCrimeInfo(), "insightCrime")
+        #pp = self.ensure_dict(self.plazaPublicaInfo(), "plazaPublica")
+        re = self.ensure_dict(self.republicaInfo(), "republica")
+
+        vp = None
+        ep = None
+        ic = None
+        pp = None
+        #re = None
+
+        info = {
             "voxPopuli": vp['voxPopuli'] if vp else None,
             "epInvestiga": ep['epInvestiga'] if ep else None,
             "insightCrime": ic['insightCrime'] if ic else None,
             "plazaPublica": pp['plazaPublica'] if pp else None,
             "republica": re['republica'] if re else None
-        }, indent=4, ensure_ascii=False)
+        }
 
         return info
     
@@ -189,8 +221,8 @@ if __name__ == "__main__":
     # toda la busqueda
     info = news.combine()
 
-    with open('data/prueba_general_v1.json', 'w') as gen:
-        json.dump(info, gen, indent=4, ensure_ascii=False, encoding='utf-8')
+    with open('data/prueba_general_v1.json', 'w', encoding='utf-8') as gen:
+        json.dump(info, gen, indent=4, ensure_ascii=False)
 
 
 """
