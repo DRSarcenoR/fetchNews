@@ -75,7 +75,7 @@ class plazaPublica:
         search_box = driver.find_element(By.CSS_SELECTOR, "input.gsc-input")
 
         # Escribir el término de búsqueda y presionar Enter
-        search_box.send_keys("bernardo arevalo")
+        search_box.send_keys(self.nombre)
         search_box.send_keys(Keys.RETURN)
 
         # esperamos un tiempo a que cargue la página

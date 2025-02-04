@@ -1,0 +1,9 @@
+    #warnings.filterwarnings('ignore')
+
+    #news = scrappedNews(nombre='bernardo arevalo')
+
+    # toda la busqueda
+    #info = news.combine()
+
+    #with open('data/prueba_general_v1.json', 'w', encoding='utf-8') as gen:
+    #    json.dump(info, gen, indent=4, ensure_ascii=False)

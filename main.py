@@ -24,9 +24,12 @@ import pandas as pd
 import numpy as np
 import warnings
 import json
+import io
 import time
 import random
 import json
+import functools
+from typing import Callable
 from datetime import datetime
 from pytz import timezone
 from selenium import webdriver
@@ -39,10 +42,42 @@ from bs4 import BeautifulSoup
 import bs4
 import requests
 from requests.exceptions import RequestException
+# app
+import streamlit as st
 # ------------------------------>
 #     librerías propias
 from CHN.general import Analysis, Scrapping, Decorators
 # ------------------------------>
+
+
+
+class SDecorators:
+    def __init_(self) -> None:
+        pass
+    
+    @staticmethod
+    def tiempo_ejecucion(func):
+        #@functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            result = func(*args, **kwargs)
+            end = time.time()
+            tiempo = end - start
+            st.write(f'Tiempo de ejecución de {func.__name__}: {tiempo:.6f} segundos')
+            return result
+        return wrapper
+    
+    @staticmethod
+    def inicio_y_fin(func):
+        #@functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            st.write(f'Inicio de la función: {func.__name__}')
+            result = func(*args, **kwargs)
+            st.write(f'Fin de la función: {func.__name__}')
+            return result
+        return wrapper
+
+
 
 
 class scrappedNews:
@@ -60,18 +95,22 @@ class scrappedNews:
         # paquete scrapping
         self.scrap = Scrapping()
 
-
     @Decorators.inicio_y_fin
     def voxPopuliInfo(self) -> json:
-        # numero de paginas
-        max_pages = self.vp.obtener_max_pags()
+        try:
+            # numero de paginas
+            max_pages = self.vp.obtener_max_pags()
 
-        mp = max_pages if max_pages else 1
+            mp = max_pages if max_pages else 1
 
-        # todos los articulos
-        info = self.vp.all_pages(max_pages=mp)
+            # todos los articulos
+            info = self.vp.all_pages(max_pages=mp)
 
-        return info
+            return info
+        except Exception as e:
+            print(f'Error: {e}')
+            return {"voxPopuli": []}
+    
 
 
     @Decorators.inicio_y_fin
@@ -88,7 +127,10 @@ class scrappedNews:
             info = self.ep.all_pages(max_page=max_page_ep)
 
             return info
+        else:
+            return {"epInvestiga": []}
         
+
     @Decorators.inicio_y_fin
     def insightCrimeInfo(self) -> json:
         try:
@@ -115,7 +157,7 @@ class scrappedNews:
             info = {'insightCrime': []}
             return info
             
-    
+
     @Decorators.inicio_y_fin
     def plazaPublicaInfo(self) -> json:
         # entramos a la pagina y extraemos la información de la busqueda
@@ -127,6 +169,8 @@ class scrappedNews:
 
         return info
     
+
+
     @Decorators.inicio_y_fin
     def republicaInfo(self) -> json:
         try:
@@ -171,16 +215,16 @@ class scrappedNews:
 
 
     def combine(self) -> json:
-        #vp = self.ensure_dict(self.voxPopuliInfo(), "voxPopuli")
-        #ep = self.ensure_dict(self.epInvestigaInfo(), "epInvestiga")
-        #ic = self.ensure_dict(self.insightCrimeInfo(), "insightCrime")
-        #pp = self.ensure_dict(self.plazaPublicaInfo(), "plazaPublica")
+        vp = self.ensure_dict(self.voxPopuliInfo(), "voxPopuli")
+        ep = self.ensure_dict(self.epInvestigaInfo(), "epInvestiga")
+        ic = self.ensure_dict(self.insightCrimeInfo(), "insightCrime")
+        pp = self.ensure_dict(self.plazaPublicaInfo(), "plazaPublica")
         re = self.ensure_dict(self.republicaInfo(), "republica")
 
-        vp = None
-        ep = None
-        ic = None
-        pp = None
+        #vp = None
+        #ep = None
+        #ic = None
+        #pp = None
         #re = None
 
         info = {
@@ -210,22 +254,26 @@ class scrappedNews:
         ]
         return pd.DataFrame(datos)
 
+    def extract_json(self, data : dict) -> pd.DataFrame:
+        if isinstance(data, dict):
+            try:
+                articulos = [
+                    (diary, articulo['titulo'], articulo['resumen'], articulo['link'], articulo['categoria'], articulo['fecha'], articulo['autor'])
+                    for diary, pages in data.items()
+                    for page in pages
+                    for articulo in page['articulos']
+                ]
+                df = pd.DataFrame(articulos, columns=['Diario', 'Título', 'Resumen', 'Link', 'Categoría', 'Fecha', 'Autor'])
+                return df
+            except Exception as e:
+                print(f'Error: {e}')
+                return pd.DataFrame((np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan), columns=['Diario', 'Título', 'Resumen', 'Link', 'Categoría', 'Fecha', 'Autor'])
+        else:
+            return pd.DataFrame((np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan), columns=['Diario', 'Título', 'Resumen', 'Link', 'Categoría', 'Fecha', 'Autor'])
 
 
 
 if __name__ == "__main__":
-    warnings.filterwarnings('ignore')
-
-    news = scrappedNews(nombre='bernardo arevalo')
-
-    # toda la busqueda
-    info = news.combine()
-
-    with open('data/prueba_general_v1.json', 'w', encoding='utf-8') as gen:
-        json.dump(info, gen, indent=4, ensure_ascii=False)
-
-
-"""
     warnings.filterwarnings('ignore')
 
     # configuracion inicial de la app
@@ -247,7 +295,13 @@ if __name__ == "__main__":
                 with st.spinner("Buscando información..."):
                     # creamos el objeto
                     news = scrappedNews(termino)
-                    df = news.buscar_info()
+
+                    # buscamos
+                    #df = news.buscar_info()
+                    info = news.combine()
+
+                    # extraemos el dataframe
+                    df = news.extract_json(data=info)
                     st.session_state["resultados"] = df
                     st.session_state["busqueda"] = termino
                     st.success("Búsqueda completada. Ve a la pestaña de Resultados.")
@@ -258,26 +312,60 @@ if __name__ == "__main__":
             st.warning('No hay datos disponibles. Realiza una búsqueda primero.')
         else:
             st.write(f"Resultados para: **{st.session_state['busqueda']}**")
+            # busqueda
+            termino = st.session_state['busqueda']
+            termino2 = '-'.join(termino.strip().split())
 
-            # Convertir datos JSON para descarga
+            # dataframe
+            resultados = st.session_state["resultados"]
+
+            # Convertir datos #
+            # a json
             json_data = st.session_state['resultados'].to_json(orient='records', indent=4, force_ascii=False)
+            # a xlsx
+            xlsx_buffer = io.BytesIO()
+            with pd.ExcelWriter(xlsx_buffer, engine='openpyxl') as writer:
+                resultados.to_excel(writer, index=False, sheet_name='Datos')
+            xlsx_data = xlsx_buffer.getvalue()
+            # a csv
+            csv_buffer = io.StringIO()
+            resultados.to_csv(csv_buffer, index=False)
+            csv_data = csv_buffer.getvalue()
 
-            # Boton de descarga
-            st.download_button(
-                label='Descargar datos en JSON',
-                data=json_data.encode('utf-8'),
-                file_name='resultados.json',
-                mime='application/json'
-            )
+            # mostrar los botons en fila
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                # Boton de descarga
+                st.download_button(
+                    label='Descargar datos en JSON',
+                    data=json_data.encode('utf-8'),
+                    file_name=f'resultados_{termino2}.json',
+                    mime='application/json'
+                )
+            
+            with col2:
+                st.download_button(
+                    label='Descargar XLSX',
+                    data=xlsx_data,
+                    file_name=f'resultados_{termino2}.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+            
+            with col3:
+                st.download_button(
+                    label='Descargar CSV',
+                    data=csv_data,
+                    file_name=f'resultados_{termino2}.csv',
+                    mime='text/csv'
+                )
 
             # Generar las tablas personalizadas en HTML
-            resultados = st.session_state["resultados"]
             for _, row in resultados.iterrows():
                 html2 = f'''
                 <div style="border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; padding: 10px;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
-                            <td rowspan="4" style="border: 1px solid #ddd; text-align: center; vertical-align: middle; width: 15%; font-weight: bold;">{row['Sitio']}</td>
+                            <td rowspan="4" style="border: 1px solid #ddd; text-align: center; vertical-align: middle; width: 15%; font-weight: bold;">{row['Diario']}</td>
                             <td style="border: 1px solid #ddd; font-weight: bold;">Título</td>
                             <td style="border: 1px solid #ddd;">{row['Título']}</td>
                         </tr>
@@ -306,7 +394,7 @@ if __name__ == "__main__":
                 html = f'''<div style="border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; padding: 10px;">
                                 <table style="width: 100%; border-collapse: collapse;">
                                     <tr>
-                                        <td rowspan="6" style="border: 1px solid #ddd; text-align: center; vertical-align: middle; width: 15%; font-weight: bold;">{row['Sitio']}</td>
+                                        <td rowspan="6" style="border: 1px solid #ddd; text-align: center; vertical-align: middle; width: 15%; font-weight: bold;">{row['Diario']}</td>
                                         <td style="border: 1px solid #ddd; font-weight: bold; width: 20%;">Título</td>
                                         <td style="border: 1px solid #ddd; width: 65%;">{row['Título']}</td>
                                     </tr>
@@ -333,4 +421,3 @@ if __name__ == "__main__":
                                 </table>
                             </div>'''
                 st.markdown(html, unsafe_allow_html=True)
-"""

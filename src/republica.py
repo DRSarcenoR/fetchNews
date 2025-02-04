@@ -63,7 +63,7 @@ class Republica:
         time_tag = soup.select_one(".nota__fecha")
         time = time_tag.get_text(strip=True) if time_tag else None
         return {
-            "title": self.tm.remove_unsupported_characters(title),
+            "titulo": self.tm.remove_unsupported_characters(title),
             "resumen": None,
             "link": self.tm.remove_unsupported_characters(url),
             "categoria": self.tm.remove_unsupported_characters(category),
