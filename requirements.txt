@@ -1,0 +1,20 @@
+# Requerimientos generales de pip
+pandas
+numpy
+matplotlib
+scikit-learn
+scipy
+seaborn
+selenium
+requests
+statsmodels
+sympy
+sqlalchemy
+pyodbc
+openpyxl
+ipykernel
+beautifulsoup4
+polars
+rapidfuzz
+tabulate
+git+https://github.com/DRSarcenoR/general.git@main#egg=CHN&subdirectory=CHN
