@@ -24,6 +24,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import bs4
 import requests
@@ -91,6 +93,58 @@ class plazaPublica:
         soup = BeautifulSoup(html_actual, 'html.parser')
 
         return soup
+    
+
+    def selenium_conection_headless(self) -> bs4.BeautifulSoup:
+        # creamos el objeto de optiones para la configuración del webdriver
+        options = Options()
+
+        # agregamos los argumentos
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+
+        # creamos el servicio
+        service = Service(ChromeDriverManager().install())
+
+        # creamos el driver
+        driver = webdriver.Chrome(service=service, options=options)
+
+        # cargamos la pagina
+        driver.get(self.url)
+
+        # esperamos a que cargue la pagina
+        WebDriverWait(driver, 10)
+
+        # buscamos el icono de buscar y le damos click
+        try:
+            buscar_icono = driver.find_element(By.CSS_SELECTOR, '.top-buscar a')
+            buscar_icono.click()
+            time.sleep(3)
+        except:
+            print('No fue necesario hacer click')
+
+        # Localizar el campo de búsqueda dentro de Google Custom Search
+        search_box = driver.find_element(By.CSS_SELECTOR, "input.gsc-input")
+
+        # Escribir el término de búsqueda y presionar Enter
+        search_box.send_keys(self.nombre)
+        search_box.send_keys(Keys.RETURN)
+
+        # esperamos un tiempo a que cargue la página
+        time.sleep(5) # usamos time sleep para forzar los 5 segundos
+
+        # extramos el html
+        html_actual = driver.page_source
+
+        # cerramos el navegador extra
+        driver.quit()
+
+        # parseamos el html
+        soup = BeautifulSoup(html_actual, 'html.parser')
+
+        return soup
+    
 
     def extraer_articulos(self, soup : bs4.BeautifulSoup) -> dict:
         title_tag = soup.select_one('.gs-title a')
@@ -121,7 +175,7 @@ if __name__ == "__main__":
     pp = plazaPublica(nombre='bernardo arevalo')
 
     # entramos a la pagina y extraemos la información de la busqueda
-    html_parsed = pp.selenium_conection()
+    html_parsed = pp.selenium_conection_headless()
     articulos = [pp.extraer_articulos(articulo) for articulo in html_parsed.select('div.gsc-webResult')]
 
     # json

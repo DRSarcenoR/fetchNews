@@ -17,4 +17,5 @@ beautifulsoup4
 polars
 rapidfuzz
 tabulate
+webdriver-manager
 git+https://github.com/DRSarcenoR/general.git@main#egg=CHN&subdirectory=CHN
