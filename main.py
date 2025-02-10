@@ -276,10 +276,10 @@ class scrappedNews:
 
 
 if __name__ == "__main__":
-    warnings.filterwarnings('ignore')
-
     # configuracion inicial de la app
     st.set_page_config(page_title='Scrapping de Noticias', layout='wide')
+    
+    warnings.filterwarnings('ignore')
 
     # sidebar para navegacion
     pagina = st.sidebar.radio("Navegación", ['Inicio', 'Resultados'])
