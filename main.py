@@ -15,7 +15,7 @@
 from src.voxPopuli import voxPopuli
 from src.epInvestiga import epInvestiga
 from src.insightCrime import insightCrime
-from src.plazaPublica import plazaPublica
+#from src.plazaPublica import plazaPublica
 from src.republica import Republica
 # ------------------------------>
 #     librerías útiles
