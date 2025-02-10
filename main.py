@@ -32,12 +32,14 @@ import functools
 from typing import Callable
 from datetime import datetime
 from pytz import timezone
+'''
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+'''
 from bs4 import BeautifulSoup
 import bs4
 import requests
@@ -89,7 +91,7 @@ class scrappedNews:
         self.vp = voxPopuli(nombre=nombre)
         self.ep = epInvestiga(nombre=nombre)
         self.ic = insightCrime(nombre=nombre)
-        self.pp = plazaPublica(nombre=nombre)
+        #self.pp = plazaPublica(nombre=nombre)
         self.re = Republica(nombre=nombre)
 
         # paquete scrapping
@@ -157,7 +159,7 @@ class scrappedNews:
             info = {'insightCrime': []}
             return info
             
-
+    '''
     @Decorators.inicio_y_fin
     def plazaPublicaInfo(self) -> json:
         # entramos a la pagina y extraemos la información de la busqueda
@@ -168,7 +170,7 @@ class scrappedNews:
         info = json.dumps({"plazaPublica": [{"page": 1, "articulos": articulos}]}, indent=4, ensure_ascii=False)
 
         return info
-    
+    '''
 
 
     @Decorators.inicio_y_fin
@@ -218,7 +220,7 @@ class scrappedNews:
         vp = self.ensure_dict(self.voxPopuliInfo(), "voxPopuli")
         ep = self.ensure_dict(self.epInvestigaInfo(), "epInvestiga")
         ic = self.ensure_dict(self.insightCrimeInfo(), "insightCrime")
-        pp = self.ensure_dict(self.plazaPublicaInfo(), "plazaPublica")
+        #pp = self.ensure_dict(self.plazaPublicaInfo(), "plazaPublica")
         re = self.ensure_dict(self.republicaInfo(), "republica")
 
         #vp = None
@@ -231,7 +233,7 @@ class scrappedNews:
             "voxPopuli": vp['voxPopuli'] if vp else None,
             "epInvestiga": ep['epInvestiga'] if ep else None,
             "insightCrime": ic['insightCrime'] if ic else None,
-            "plazaPublica": pp['plazaPublica'] if pp else None,
+            #"plazaPublica": pp['plazaPublica'] if pp else None,
             "republica": re['republica'] if re else None
         }
 
