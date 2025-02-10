@@ -52,6 +52,11 @@ from CHN.general import Analysis, Scrapping, Decorators
 # ------------------------------>
 
 
+# configuracion inicial de la app
+st.set_page_config(page_title='Scrapping de Noticias', layout='wide')
+
+
+
 
 class SDecorators:
     def __init_(self) -> None:
@@ -275,10 +280,7 @@ class scrappedNews:
 
 
 
-if __name__ == "__main__":
-    # configuracion inicial de la app
-    st.set_page_config(page_title='Scrapping de Noticias', layout='wide')
-    
+if __name__ == "__main__":    
     warnings.filterwarnings('ignore')
 
     # sidebar para navegacion
