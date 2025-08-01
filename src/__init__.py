@@ -3,3 +3,4 @@ from .insightCrime import insightCrime
 #from .plazaPublica import plazaPublica
 from .republica import Republica
 from .voxPopuli import voxPopuli
+from .openaiGPT import openaiGPT
